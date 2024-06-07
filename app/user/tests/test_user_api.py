@@ -36,7 +36,7 @@ class PublicUserApiTests(TestCase):
 
         payload = {
             'email': 'test@example.com',
-            'password': 'test_password123',
+            'password': 'testpass123',
             'name': 'Test user'
         }
         res = self.client.post(CREATE_USER_URL, payload)
@@ -51,8 +51,8 @@ class PublicUserApiTests(TestCase):
 
         payload = {
             'email': 'test@example.com',
-            'password': 'test_password123',
-            'name': 'Test user'
+            'password': 'testpass123',
+            'name': 'Test Name'
         }
         create_user(**payload)
         res = self.client.post(CREATE_USER_URL, payload)
@@ -64,14 +64,14 @@ class PublicUserApiTests(TestCase):
 
         payload = {
             'email': 'test@example.com',
-            'password': 'te',
-            'name': 'Test user'
+            'password': 'pw',
+            'name': 'Test name'
         }
         res = self.client.post(CREATE_USER_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
         user_exists = get_user_model().objects.filter(
-            email = payload['email']
+            email=payload['email']
         ).exists()
         self.assertFalse(user_exists)
 
@@ -80,7 +80,7 @@ class PublicUserApiTests(TestCase):
         log_call()
 
         user_details = {
-            'name': 'Test user',
+            'name': 'Test Name',
             'email': 'test@example.com',
             'password': 'good_password_123'
         }
@@ -97,10 +97,8 @@ class PublicUserApiTests(TestCase):
 
     def test_create_token_bad_credentials(self):
         """Test create token for bad credentials"""
-        log_call()
-
         user_details = {
-            'name': 'Test user',
+            'name': 'Test name',
             'email': 'test@example.com',
             'password': 'good_password_123'
         }
