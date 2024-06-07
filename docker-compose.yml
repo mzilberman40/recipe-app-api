@@ -30,7 +30,7 @@ services:
     environment:
       - POSTGRES_DB=devdb
       - POSTGRES_USER=devuser
-      - POSTGRES_PASSWORD=chanheme
+      - POSTGRES_PASSWORD=changeme
 
 
 volumes:
