@@ -1,10 +1,10 @@
 """
 Django command to wait for the database to be available
 """
-from django.core.management.base import BaseCommand
 import time
-from psycopg2 import OperationalError as Psycop2OpError
+from psycopg2 import OperationalError as Psycopg2OpError
 from django.db.utils import OperationalError
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -20,7 +20,7 @@ class Command(BaseCommand):
             try:
                 self.check(databases=['default'])
                 db_up = True
-            except (Psycop2OpError, OperationalError):
+            except (Psycopg2OpError, OperationalError):
                 self.stdout.write("The DB is not available. Waiting for 1 sec...")
                 time.sleep(1)
 

@@ -20,12 +20,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3i@@0gi0vo8w28vhbq^v$153byyu4b_9r1kduaire5o=j_k%c3'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'changeme')
+# SECRET_KEY = 'django-insecure-3i@@0gi0vo8w28vhbq^v$153byyu4b_9r1kduaire5o=j_k%c3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 
 ALLOWED_HOSTS = []
+ALLOWED_HOSTS.extend(
+    filter(None,
+           os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(','),
+           )
+)
 
 
 # Application definition
@@ -118,6 +124,8 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
+USE_L10N = True
+
 USE_TZ = True
 
 
@@ -140,5 +148,16 @@ AUTH_USER_MODEL = 'core.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
-
 }
+
+SPECTACULAR_SETTINGS = {
+    'COMPONENT_SPLIT_REQUEST': True
+}
+
+# SPECTACULAR_SETTINGS = {
+#     'COMPONENT_SPLIT_REQUEST': True,
+#     'TITLE': 'Your API Title',
+#     'DESCRIPTION': 'Your API description',
+#     'VERSION': '1.0.0',
+#     'SERVE_INCLUDE_SCHEMA': False,
+# }

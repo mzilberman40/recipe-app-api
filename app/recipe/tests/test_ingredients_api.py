@@ -1,4 +1,5 @@
 """Tests for ingredient API"""
+from decimal import Decimal
 
 from my_utils import log_call
 
@@ -9,7 +10,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import Ingredient
+from core.models import Ingredient, Recipe
 from recipe.serializers import IngredientSerializer
 
 
@@ -96,56 +97,47 @@ class PrivateIngredientsAPITests(TestCase):
         ingredients = Ingredient.objects.filter(user=self.user)
         self.assertFalse(ingredients.exists())
 
-    #
-    # def test_create_recipe(self):
-    #     """Test creating a recipe"""
-    #     log_call()
-    #
-    #     payload = {
-    #         'title': 'Sample recipe',
-    #         'time_minutes': 22,
-    #         'price': Decimal('12.50'),
-    #         'description': 'Sample description',
-    #         'link': 'http://sample.com/recipe.pdf',
-    #     }
-    #     # print(payload)
-    #     res = self.client.post(RECIPE_URL, payload)
-    #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-    #     recipe = Recipe.objects.get(id=res.data['id'])
-    #     for k, v in payload.items():
-    #         self.assertEqual(getattr(recipe, k), v)
-    #     self.assertEqual(recipe.user, self.user)
-    #
+    def test_filter_ingredients_assigned_to_recipes(self):
+        """
+        Test filtering ingredients by those assigned to recipes
+        """
+        ing1 = Ingredient.objects.create(user=self.user, name="Apples")
+        ing2 = Ingredient.objects.create(user=self.user, name="Turkey")
+        recipe = Recipe.objects.create(
+            title='Sample recipe',
+            time_minutes=22,
+            price=Decimal('12.50'),
+            user=self.user
+        )
+        recipe.ingredients.add(ing1)
+        res = self.client.get(INGREDIENTS_URL, {'assigned_only': 1})
+        s1 = IngredientSerializer(ing1)
+        s2 = IngredientSerializer(ing2)
+        self.assertIn(s1.data, res.data)
+        self.assertNotIn(s2.data, res.data)
 
-    #
+    def test_filter_ingredients_unique(self):
+        """
+        Test filtered ingredients returns an unique list
+        """
+        ing = Ingredient.objects.create(user=self.user, name="Eggs")
+        Ingredient.objects.create(user=self.user, name="Lentils")
+        recipe1 = Recipe.objects.create(
+            title='Benedict eggs',
+            time_minutes=22,
+            price=Decimal('12.50'),
+            user=self.user
+        )
+        recipe2 = Recipe.objects.create(
+            title='Herb eggs',
+            time_minutes=22,
+            price=Decimal('12.50'),
+            user=self.user
+        )
+        recipe1.ingredients.add(ing)
+        recipe2.ingredients.add(ing)
+
+        res = self.client.get(INGREDIENTS_URL, {'assigned_only': 1})
+        self.assertEqual(len(res.data), 1)
 
 
-
-    #
-    # def test_update_user_returns_error(self):
-    #     """Test changing the recipe user results in an error"""
-    #     log_call()
-    #     new_user = get_user_model().objects.create_user(
-    #         'user2@example.com',
-    #         'test_pass123'
-    #     )
-    #     recipe = create_recipe(user=self.user)
-    #     payload = {
-    #         'user': new_user,
-    #     }
-    #     url = detail_url(recipe.id)
-    #     res = self.client.patch(url, payload)
-    #     recipe.refresh_from_db()
-    #     self.assertEqual(recipe.user, self.user)
-    #
-
-    #
-    # def test_delete_other_user_recipe(self):
-    #     """Test trying to delete another user's recipe"""
-    #     log_call()
-    #     other_user = get_user_model().objects.create_user('user2@example.com', 'test_pass123')
-    #     recipe = create_recipe(user=other_user)
-    #     url = detail_url(recipe.id)
-    #     res = self.client.delete(url)
-    #     self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
-    #     self.assertTrue(Recipe.objects.filter(id=recipe.id).exists())
