@@ -28,12 +28,12 @@ print(SECRET_KEY)
 DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 print(DEBUG)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-# ALLOWED_HOSTS.extend(
-#     filter(None,
-#            os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(','),
-#            )
-# )
+ALLOWED_HOSTS = []
+ALLOWED_HOSTS.extend(
+    filter(None,
+           os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(','),
+           )
+)
 print(ALLOWED_HOSTS)
 
 # Application definition
@@ -153,13 +153,9 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'COMPONENT_SPLIT_REQUEST': True
+    'COMPONENT_SPLIT_REQUEST': True,
+    'TITLE': 'Your API Title',
+    'DESCRIPTION': 'Your API description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
-
-# SPECTACULAR_SETTINGS = {
-#     'COMPONENT_SPLIT_REQUEST': True,
-#     'TITLE': 'Your API Title',
-#     'DESCRIPTION': 'Your API description',
-#     'VERSION': '1.0.0',
-#     'SERVE_INCLUDE_SCHEMA': False,
-# }
