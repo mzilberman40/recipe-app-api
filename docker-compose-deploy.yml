@@ -7,6 +7,9 @@ services:
     restart: always
     volumes:
       - static-data:/vol/web
+    env_file:
+      - path: .env
+        required: true
     environment:
       - DB_HOST=db
       - DB_NAME=${DB_NAME}
