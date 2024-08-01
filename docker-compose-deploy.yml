@@ -1,4 +1,4 @@
-version: "3.9"
+#version: "3.9"
 
 services:
   app:
@@ -10,6 +10,7 @@ services:
     env_file:
       - path: .env
         required: true
+
     environment:
       - DB_HOST=db
       - DB_NAME=${DB_NAME}
