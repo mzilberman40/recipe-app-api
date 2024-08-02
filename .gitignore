@@ -146,3 +146,4 @@ cython_debug/
 /.secret.txt
 /*/*/migrations/
 /.gitignore
+/app/core/migrations/
